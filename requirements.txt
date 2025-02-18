@@ -1,0 +1,6 @@
+flask>=2.0.0
+rdkit>=2022.9.5
+scikit-learn>=1.0.0
+numpy>=1.20.0
+pillow>=9.0.0
+werkzeug>=2.0.0 

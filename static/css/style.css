@@ -1,0 +1,292 @@
+/* 全局变量 */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --bg-color: #ffffff;
+    --text-color: #212529;
+    --border-color: #dee2e6;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --transition-speed: 0.3s;
+}
+
+/* 深色模式变量 */
+[data-theme="dark"] {
+    --primary-color: #3d8bfd;
+    --secondary-color: #adb5bd;
+    --bg-color: #212529;
+    --text-color: #f8f9fa;
+    --border-color: #495057;
+    --card-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+}
+
+/* 全局样式 */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+/* 导航栏样式 */
+.navbar {
+    background-color: var(--bg-color) !important;
+    box-shadow: var(--card-shadow);
+}
+
+.navbar-brand i {
+    color: var(--primary-color);
+}
+
+/* 暗色模式切换按钮 */
+#darkModeToggle {
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: background-color var(--transition-speed);
+}
+
+#darkModeToggle:hover {
+    background-color: var(--border-color);
+}
+
+/* 主卡片样式 */
+.main-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    transition: box-shadow var(--transition-speed);
+}
+
+.main-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* 标签页样式 */
+.nav-pills .nav-link {
+    color: var(--text-color);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    transition: all var(--transition-speed);
+}
+
+.nav-pills .nav-link.active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.nav-pills .nav-link:not(.active):hover {
+    background-color: var(--border-color);
+}
+
+/* 编辑器容器样式 */
+.editor-container {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    margin: 1rem 0;
+    background-color: var(--bg-color);
+}
+
+.editor-toolbar {
+    padding: 0.75rem;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.jsme-container {
+    width: 100%;
+    height: 400px;
+    min-height: 400px;
+    background-color: var(--bg-color);
+    position: relative;
+    display: block;
+}
+
+/* 确保JSME iframe正确显示 */
+.jsme-container iframe {
+    width: 100% !important;
+    height: 100% !important;
+    border: none !important;
+    display: block !important;
+}
+
+/* SMILES输入样式 */
+.smiles-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.smiles-examples {
+    margin: 1rem 0;
+    padding: 1rem;
+    background-color: var(--bg-color);
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.smiles-example {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+    margin: 0.25rem;
+    text-decoration: none;
+}
+
+/* 模板网格样式 */
+.templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.template-card {
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+    background-color: var(--bg-color);
+}
+
+.template-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--card-shadow);
+}
+
+/* 加载动画样式 */
+.loading {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.loading-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+/* 结果卡片样式 */
+.result-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: var(--card-shadow);
+    margin-top: 2rem;
+    transition: all var(--transition-speed);
+}
+
+.result-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.molecule-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem auto;
+    display: block;
+}
+
+/* 表格样式 */
+.table {
+    color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+.table th {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .table th {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+.pi-homa-value {
+    font-family: monospace;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+.atom-indices {
+    font-family: monospace;
+    color: var(--secondary-color);
+}
+
+/* 页脚样式 */
+.footer {
+    background-color: var(--bg-color) !important;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .nav-pills .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .editor-toolbar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .jsme-container {
+        min-height: 300px;
+    }
+
+    .templates-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/* 辅助类 */
+.legend {
+    font-size: 0.9rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.fade-in {
+    animation: fadeIn var(--transition-speed) ease-in;
+}
+
+/* 模态框样式 */
+.modal-content {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+.modal-header {
+    border-bottom-color: var(--border-color);
+}
+
+.modal-footer {
+    border-top-color: var(--border-color);
+}
