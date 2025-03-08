@@ -15,10 +15,11 @@
 
 - 后端:
   - Python 3.8+
-  - Flask
-  - RDKit
+  - Flask - Web框架
+  - RDKit - 分子操作和分析
+  - scikit-learn - 机器学习模型
+  - joblib - 模型序列化
   - XTB (可选,用于分子构型优化)
-  - scikit-learn
 
 - 前端:
   - JSME分子编辑器
@@ -28,13 +29,7 @@
 
 ## 安装说明
 
-1. 克隆仓库:
-```bash
-git clone https://github.com/yourusername/pi-homa-calculator.git
-cd pi-homa-calculator
-```
-
-2. 创建并激活虚拟环境:
+1. 创建并激活虚拟环境:
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -42,17 +37,17 @@ source venv/bin/activate  # Linux/Mac
 venv\Scripts\activate  # Windows
 ```
 
-3. 安装Python依赖:
+2. 安装Python依赖:
 ```bash
 pip install -r requirements.txt
 ```
 
-4. 安装JSME:
+3. 安装JSME:
 ```bash
 npm install
 ```
 
-5. 安装XTB (可选):
+4. 安装XTB (可选):
 请参考[XTB官方安装指南](https://xtb-docs.readthedocs.io/en/latest/setup.html)
 
 ## 使用说明
@@ -121,13 +116,13 @@ pre-commit install
 pytest
 ```
 
-## 贡献指南
+### 开发工具
 
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 提交 Pull Request
+- **black**: Python代码格式化
+- **flake8**: 代码风格检查
+- **mypy**: 类型检查
+- **pytest**: 单元测试
+- **pre-commit**: Git提交前的代码质量检查
 
 ## 许可证
 
@@ -138,7 +133,3 @@ pytest
 - [JSME Molecule Editor](https://jsme-editor.github.io/)
 - [RDKit](https://www.rdkit.org/)
 - [XTB](https://xtb-docs.readthedocs.io/)
-
-## 联系方式
-
-如有问题或建议,请提交 Issue 或联系项目维护者。 

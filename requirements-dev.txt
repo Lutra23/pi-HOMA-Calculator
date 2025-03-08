@@ -1,0 +1,14 @@
+-r requirements.txt
+
+# 测试工具
+pytest>=7.0.0
+pytest-cov>=4.0.0
+
+# 代码质量工具
+pre-commit>=3.0.0
+flake8>=6.0.0
+black>=23.0.0
+mypy>=1.0.0
+
+# 类型提示
+types-all>=1.0.0
