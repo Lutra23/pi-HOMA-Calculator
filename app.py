@@ -33,9 +33,18 @@ def home():
 @app.route('/calculate', methods=['POST'])
 def calculate():
     try:
-        # 获取输入
-        input_str = request.form.get('smiles', '')
+        # 获取输入 - 支持JSON和表单两种格式
+        if request.is_json:
+            input_str = request.json.get('smiles', '')
+        else:
+            input_str = request.form.get('smiles', '')
         
+        if not input_str:
+            return jsonify({
+                'success': False,
+                'error': '请输入SMILES字符串'
+            })
+            
         # 验证输入
         mol, smiles, input_format = validate_molecule_input(input_str)
         
@@ -45,6 +54,7 @@ def calculate():
         
         # 获取所有环
         all_rings = list(molecule.mol.GetRingInfo().AtomRings())
+        logger.info(f"找到的环: {all_rings}")
         
         # 筛选芳香环
         aromatic_rings = []
@@ -54,6 +64,8 @@ def calculate():
                 aromatic_rings.append(ring)
                 aromatic_ring_indices.append(i)
         
+        logger.info(f"芳香环: {aromatic_rings}")
+        
         if not aromatic_rings:
             return jsonify({
                 'success': False,
@@ -62,7 +74,9 @@ def calculate():
         
         # 只计算芳香环的π-HOMA值
         results = calculator.calculate_all_rings_pi_homa(molecule.mol)
+        logger.info(f"计算结果: {results}")
         filtered_results = {i: results[idx] for i, idx in enumerate(aromatic_ring_indices)}
+        logger.info(f"过滤后的结果: {filtered_results}")
         
         # 生成带有环高亮的分子图像
         png_data = generate_molecule_image(molecule.mol, aromatic_rings)
@@ -79,11 +93,14 @@ def calculate():
                 'format': input_format
             })
         
-        return jsonify({
+        response_data = {
             'success': True,
             'molecule_image': img_str,
             'rings': rings_data
-        })
+        }
+        logger.info(f"返回数据结构: {response_data}")
+        
+        return jsonify(response_data)
         
     except Exception as e:
         logger.error(f"计算过程出错: {str(e)}")
@@ -93,4 +110,4 @@ def calculate():
         })
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

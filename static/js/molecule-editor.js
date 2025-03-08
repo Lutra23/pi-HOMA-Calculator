@@ -9,9 +9,29 @@ window.jsmeApplet = null;
  * JSME分子编辑器初始化配置
  */
 const JSME_OPTIONS = {
-    "options": "nosearch,nopaste,oldlook",
-    "borderColor": "#dee2e6",
-    "backgroundColor": "#ffffff"
+    "css": "border: 1px solid white;",
+    "bondwidth": 1.2,
+    "highlightColor": "#4361ee",
+    "implicitH": true,
+    "atomMoveRatio": 1.5,
+    "bondMoveRatio": 1.5,
+    "autoScale": true,
+    "autoez": true,
+    "language": "zh",
+    "appearance": {
+        "atomColors": {
+            "H": "#404040",
+            "C": "#404040",
+            "N": "#0000FF",
+            "O": "#FF0000",
+            "F": "#00FF00",
+            "Cl": "#00FF00",
+            "Br": "#800000",
+            "I": "#800080",
+            "S": "#FFA500"
+        },
+        "backgroundColor": "transparent"
+    }
 };
 
 // 添加脚本加载状态检查
@@ -84,9 +104,7 @@ function initializeJSME() {
         console.log('JSME库加载正常');
 
         // 创建编辑器实例
-        window.jsmeApplet = new JSApplet.JSME("jsme_container", "100%", "400px", {
-            ...JSME_OPTIONS
-        });
+        window.jsmeApplet = new JSApplet.JSME("jsme_container", "100%", "100%", JSME_OPTIONS);
         console.log('JSME实例创建成功');
 
         // 初始化分子模板
@@ -100,6 +118,11 @@ function initializeJSME() {
         // 初始化成功后设置主题
         updateEditorTheme();
         console.log('主题设置完成');
+
+        // 注册事件监听器
+        window.jsmeApplet.setCallBack("AfterStructureModified", onStructureModified);
+        window.jsmeApplet.setCallBack("AtomHighLight", onAtomHighlight);
+        window.jsmeApplet.setCallBack("BondHighLight", onBondHighlight);
 
         // 通知用户
         window.showToast('分子编辑器加载完成', 'success');
@@ -264,14 +287,16 @@ function updateEditorTheme() {
     const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
     const options = {
         ...JSME_OPTIONS,
-        "borderColor": getComputedStyle(document.documentElement).getPropertyValue('--border-color'),
-        "backgroundColor": getComputedStyle(document.documentElement).getPropertyValue('--bg-color')
+        "appearance": {
+            ...JSME_OPTIONS.appearance,
+            "backgroundColor": isDarkMode ? "#1a1b1e" : "transparent",
+            "atomColors": {
+                ...JSME_OPTIONS.appearance.atomColors,
+                "H": isDarkMode ? "#e9ecef" : "#404040",
+                "C": isDarkMode ? "#e9ecef" : "#404040"
+            }
+        }
     };
-
-    if (isDarkMode) {
-        options.atomColorPalette = "whiteOnBlack";
-        options.bondColorPalette = "whiteOnBlack";
-    }
 
     window.jsmeApplet.options(options);
     window.jsmeApplet.repaint();
@@ -309,41 +334,42 @@ window.redoLastAction = function() {
  */
 window.calculateFromEditor = async function() {
     if (!window.jsmeApplet) {
-        window.showToast('分子编辑器未加载完成，请稍候', 'warning');
+        window.showToast('错误', '分子编辑器未加载完成，请稍候');
         return;
     }
 
     const smiles = window.jsmeApplet.smiles();
     if (!smiles) {
-        window.showToast('请先绘制分子结构', 'warning');
+        window.showToast('错误', '请先绘制分子结构');
         return;
     }
-    
-    // 显示加载动画
-    document.querySelector('.loading').style.display = 'block';
-    document.getElementById('results').innerHTML = '';
-    
+
+    showLoading();
     try {
-        // 创建FormData
+        // 创建FormData对象
         const formData = new FormData();
         formData.append('smiles', smiles);
         
-        // 发送请求
         const response = await fetch('/calculate', {
             method: 'POST',
             body: formData
         });
-        
+
         if (!response.ok) {
             throw new Error('计算请求失败');
         }
 
-        const data = await response.json();
-        handleCalculationResponse(data);
+        const result = await response.json();
+        if (!result.success) {
+            throw new Error(result.error || '计算失败');
+        }
+
+        displayResult(result);
+        addToHistory(result);
     } catch (error) {
-        window.showToast(error.message, 'error');
+        window.showToast('错误', error.message);
     } finally {
-        document.querySelector('.loading').style.display = 'none';
+        hideLoading();
     }
 }
 
@@ -356,3 +382,143 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+// 结构修改回调
+function onStructureModified() {
+    // 获取当前分子的SMILES
+    const smiles = window.jsmeApplet.smiles();
+    
+    // 如果分子非空,启用计算按钮
+    const calculateBtn = document.querySelector('#editor-pane .btn-primary');
+    calculateBtn.disabled = !smiles;
+
+    // 保存到本地存储
+    localStorage.setItem('lastMolecule', smiles);
+}
+
+// 原子高亮回调
+function onAtomHighlight(atomIndex) {
+    // 显示原子信息提示
+    if (atomIndex >= 0) {
+        const atom = window.jsmeApplet.getAtom(atomIndex);
+        showAtomTooltip(atom, atomIndex);
+    }
+}
+
+// 化学键高亮回调
+function onBondHighlight(bondIndex) {
+    // 显示化学键信息提示
+    if (bondIndex >= 0) {
+        const bond = window.jsmeApplet.getBond(bondIndex);
+        showBondTooltip(bond, bondIndex);
+    }
+}
+
+// 显示原子信息提示
+function showAtomTooltip(atom, index) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'editor-tooltip';
+    tooltip.innerHTML = `
+        <div class="tooltip-content">
+            <strong>原子 #${index + 1}</strong><br>
+            元素: ${atom.element}<br>
+            电荷: ${atom.charge || '0'}<br>
+            杂化: ${getHybridization(atom)}
+        </div>
+    `;
+    
+    showTooltip(tooltip, getAtomPosition(index));
+}
+
+// 显示化学键信息提示
+function showBondTooltip(bond, index) {
+    const tooltip = document.createElement('div');
+    tooltip.className = 'editor-tooltip';
+    tooltip.innerHTML = `
+        <div class="tooltip-content">
+            <strong>化学键 #${index + 1}</strong><br>
+            类型: ${getBondType(bond.type)}<br>
+            原子: ${bond.atom1 + 1} - ${bond.atom2 + 1}
+        </div>
+    `;
+    
+    showTooltip(tooltip, getBondPosition(index));
+}
+
+// 获取原子位置
+function getAtomPosition(atomIndex) {
+    const coords = window.jsmeApplet.getAtomCoordinates(atomIndex);
+    return transformCoordinates(coords.x, coords.y);
+}
+
+// 获取化学键位置
+function getBondPosition(bondIndex) {
+    const bond = window.jsmeApplet.getBond(bondIndex);
+    const atom1 = window.jsmeApplet.getAtomCoordinates(bond.atom1);
+    const atom2 = window.jsmeApplet.getAtomCoordinates(bond.atom2);
+    return transformCoordinates(
+        (atom1.x + atom2.x) / 2,
+        (atom1.y + atom2.y) / 2
+    );
+}
+
+// 坐标转换
+function transformCoordinates(x, y) {
+    const container = document.getElementById('jsme_container');
+    const rect = container.getBoundingClientRect();
+    return {
+        x: rect.left + x * rect.width,
+        y: rect.top + y * rect.height
+    };
+}
+
+// 显示提示框
+function showTooltip(tooltip, position) {
+    // 移除现有提示框
+    document.querySelectorAll('.editor-tooltip').forEach(el => el.remove());
+    
+    // 添加新提示框
+    document.body.appendChild(tooltip);
+    
+    // 定位提示框
+    tooltip.style.left = `${position.x}px`;
+    tooltip.style.top = `${position.y}px`;
+    
+    // 3秒后自动移除
+    setTimeout(() => tooltip.remove(), 3000);
+}
+
+// 获取杂化类型
+function getHybridization(atom) {
+    const bondCount = atom.bondCount || 0;
+    const charge = atom.charge || 0;
+    
+    switch (atom.element) {
+        case 'C':
+            if (bondCount === 4) return 'sp³';
+            if (bondCount === 3) return 'sp²';
+            if (bondCount === 2) return 'sp';
+            break;
+        case 'N':
+            if (bondCount === 3) return 'sp³';
+            if (bondCount === 2) return 'sp²';
+            if (bondCount === 1) return 'sp';
+            break;
+        case 'O':
+            if (bondCount === 2) return 'sp³';
+            if (bondCount === 1) return 'sp²';
+            break;
+    }
+    return '未知';
+}
+
+// 获取化学键类型
+function getBondType(type) {
+    switch (type) {
+        case 1: return '单键';
+        case 2: return '双键';
+        case 3: return '三键';
+        case 4: return '芳香键';
+        default: return '未知';
+    }
+}
