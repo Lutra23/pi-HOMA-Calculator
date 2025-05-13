@@ -1,134 +1,167 @@
-# π-HOMA计算器
+# 🚀 π-HOMA-Calculator: A Web-Based Tool for Calculating Molecular Aromaticity 🌟
 
-一个基于Web的分子芳香性计算工具,用于计算分子中芳香环系的π-HOMA (π-Harmonic Oscillator Model of Aromaticity) 值。
+## About the Project
 
-## 功能特点
+The π-HOMA-Calculator is a web-based tool for calculating the π-HOMA (π-Harmonic Oscillator Model of Aromaticity) values of molecules. This tool is designed to provide a user-friendly interface for calculating and visualizing π-HOMA values.
 
-- 🎨 交互式分子结构编辑器
-- 🔍 支持SMILES格式输入
-- 📊 自动识别和计算芳香环系
-- 🖼️ 分子结构可视化
-- 🌙 支持深色模式
-- 📱 响应式设计,支持移动设备
+## Features
 
-## 技术栈
+### 🎨 Interactive Molecular Structure Editor
 
-- 后端:
-  - Python 3.8+
-  - Flask - Web框架
-  - RDKit - 分子操作和分析
-  - scikit-learn - 机器学习模型
-  - joblib - 模型序列化
-  - XTB (可选,用于分子构型优化)
+The π-HOMA-Calculator comes with an interactive molecular structure editor, allowing users to draw molecular structures and calculate π-HOMA values.
 
-- 前端:
-  - JSME分子编辑器
-  - Bootstrap 5
-  - Font Awesome
-  - JavaScript (原生)
+### 🔍 SMILES Format Input
 
-## 安装说明
+Users can input molecular structures in SMILES format, allowing for easy import and calculation of π-HOMA values.
 
-1. 创建并激活虚拟环境:
+### 📊 Automatic Identification and Calculation of Aromatic Rings
+
+The π-HOMA-Calculator automatically identifies and calculates π-HOMA values for aromatic rings in the input molecular structure.
+
+### 🖼️ Molecular Structure Visualization
+
+The π-HOMA-Calculator provides interactive molecular structure visualization, allowing users to examine the molecular structure and π-HOMA values.
+
+### 🌙 Dark Mode Support
+
+The π-HOMA-Calculator supports dark mode, providing a visually appealing interface for users who prefer a darker theme.
+
+### 📱 Responsive Design for Mobile Devices
+
+The π-HOMA-Calculator is optimized for mobile devices, providing a responsive design that adapts to different screen sizes and devices.
+
+## Technical Details
+
+### 👥 Frontend
+
+- JavaScript (native)
+- Bootstrap 5
+- Font Awesome
+- JSME Molecule Editor
+
+### 🕳️ Backend
+
+- Python 3.8+
+- Flask - Web framework
+- RDKit - molecular operation and analysis
+- scikit-learn - machine learning model
+- joblib - model serialization
+- XTB (optional) - molecular conformation optimization
+
+## Installation and Setup
+
+### 1️⃣ Create and Activate a Virtual Environment
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
-# 或
+# or
 venv\Scripts\activate  # Windows
 ```
 
-2. 安装Python依赖:
+### 2️⃣ Install Python Dependencies
+
 ```bash
 pip install -r requirements.txt
 ```
 
-3. 安装JSME:
+### 3️⃣ Install JSME
+
 ```bash
 npm install
 ```
 
-4. 安装XTB (可选):
-请参考[XTB官方安装指南](https://xtb-docs.readthedocs.io/en/latest/setup.html)
+### 4️⃣ Install XTB (optional)
 
-## 使用说明
+Please refer to the [XTB official installation guide](https://xtb-docs.readthedocs.io/en/latest/setup.html)
 
-1. 启动应用:
+## Usage
+
+### 1️⃣ Run the Application
+
 ```bash
 python app.py
 ```
 
-2. 访问 http://localhost:5000
+### 2️⃣ Access the π-HOMA-Calculator
 
-3. 使用方式:
-   - 使用分子编辑器绘制结构
-   - 输入SMILES字符串
-   - 从预设模板中选择
+[http://localhost:5000](http://localhost:5000)
 
-4. 计算结果包含:
-   - 分子2D结构图
-   - 每个芳香环的π-HOMA值
-   - 环系原子编号
+### 3️⃣ Use the π-HOMA-Calculator
 
-## π-HOMA值说明
+- Use the molecular editor to draw molecular structures
+- Input SMILES strings
+- Select from pre-defined templates
 
-π-HOMA (π-Harmonic Oscillator Model of Aromaticity) 是一种评估分子芳香性的指标:
+### 4️⃣ View Results
 
-- 取值范围: 0 到 1
-- 1 表示完全芳香性
-- 0 表示完全非芳香性
-- 通常认为 > 0.5 具有显著芳香性
+The π-HOMA-Calculator provides the following results:
+- 2D molecular structure diagram
+- π-HOMA values for each aromatic ring
+- Ring atom numbering
 
-## 开发说明
+## π-HOMA Value Explanation
 
-### 项目结构
+π-HOMA values are a measure of a molecule's aromaticity:
+
+- Values range from 0 to 1
+- 0 indicates no aromaticity
+- 1 indicates complete aromaticity
+- Values > 0.5 are typically considered to exhibit significant aromaticity
+
+## Contributing Guidelines
+
+### 📸 Project Structure
+
+The π-HOMA-Calculator repository is organized as follows:
 ```
 pi-homa-calculator/
-├── app.py              # Flask应用入口
-├── config.py           # 配置文件
-├── models/             # 核心计算模块
-│   ├── calculator.py   # π-HOMA计算器
-│   ├── features.py     # 特征提取
-│   └── molecule.py     # 分子数据结构
-├── utils/              # 工具函数
-│   ├── validation.py   # 输入验证
-│   └── image.py        # 图像生成
-├── static/            # 静态资源
+├── app.py              # Flask application entry point
+├── config.py           # configuration file
+├── models/             # core calculation modules
+│   ├── calculator.py   # π-HOMA calculator
+│   ├── features.py     # feature extraction
+│   └── molecule.py     # molecular data structure
+├── utils/              # utility functions
+│   ├── validation.py   # input validation
+│   └── image.py        # image generation
+├── static/            # static resources
 │   ├── css/
 │   ├── js/
-│   └── jsme/         # JSME编辑器
-└── templates/         # HTML模板
+│   └──yme/         # JSME editor
+└── templates/         # HTML templates
 ```
 
-### 开发环境配置
+### 🔧 Development Environment Setup
 
-1. 安装开发依赖:
+1. Install development dependencies:
 ```bash
 pip install -r requirements-dev.txt
 ```
 
-2. 配置pre-commit hooks:
+2. Configure pre-commit hooks:
 ```bash
 pre-commit install
 ```
 
-3. 运行测试:
+3. Run tests:
 ```bash
 pytest
 ```
 
-### 开发工具
+### 💡 Development Tools
 
-- **black**: Python代码格式化
-- **flake8**: 代码风格检查
-- **mypy**: 类型检查
-- **pytest**: 单元测试
-- **pre-commit**: Git提交前的代码质量检查
+- **black**: Python code formatter
+- **flake8**: code style checker
+- **mypy**: type checker
+- **pytest**: unit testing
+- **pre-commit**: Git commit quality checker
 
-## 许可证
+## 😊 License
 
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
+The π-HOMA-Calculator is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
 
-## 致谢
+## 🙏 Acknowledgments
 
 - [JSME Molecule Editor](https://jsme-editor.github.io/)
 - [RDKit](https://www.rdkit.org/)
