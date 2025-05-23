@@ -164,6 +164,17 @@
         <!-- 结果显示区域 -->
         <div id="results" class="row justify-content-center mt-4">
             <!-- 结果将通过JavaScript动态添加 -->
+            
+            <!-- Molecular Descriptors Display Section -->
+            <div id="molecular-descriptors-display" class="mt-4" style="display: none;"> <!-- Initially hidden -->
+                <h4>Molecular Descriptors:</h4>
+                <ul id="descriptors-list" class="list-group">
+                    <!-- JavaScript will populate this list -->
+                </ul>
+                <div id="descriptors-error" class="alert alert-warning mt-2" style="display: none;">
+                    Could not load molecular descriptors.
+                </div>
+            </div>
         </div>
     </div>
 

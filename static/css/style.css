@@ -380,3 +380,35 @@ body {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
 }
+
+/* Molecular Descriptors Section Styling */
+#molecular-descriptors-display {
+    /* The div has 'mt-4' (1.5rem margin-top) and an <hr> element
+       is added before it in the JavaScript (displayResult function),
+       providing visual separation. Additional margin-top here might be redundant.
+       e.g., margin-top: 1rem; if more is desired */
+}
+
+#molecular-descriptors-display h6 { /* Targeting h6 as used in JavaScript */
+    /* The h6 element has 'mb-3' (1rem margin-bottom) from JavaScript.
+       Adjust font-size or weight if needed for consistency. */
+    font-size: 1.15rem; /* Slightly larger for emphasis if desired */
+    font-weight: 500;   /* Common weight for subheadings */
+    /* color: var(--secondary-color); */ /* Optional: if a different color is desired */
+}
+
+#descriptors-list.list-group-flush .list-group-item {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    padding-left: 0; /* Retain flush appearance on the left */
+    padding-right: 0; /* Retain flush appearance on the right */
+    border-bottom: 1px solid var(--border-color); /* Add a subtle bottom border */
+}
+
+#descriptors-list.list-group-flush .list-group-item:last-child {
+    border-bottom: none; /* Remove border from the last item */
+}
+
+#descriptors-list .list-group-item strong {
+    color: var(--primary-color); /* Style the descriptor name for emphasis */
+}

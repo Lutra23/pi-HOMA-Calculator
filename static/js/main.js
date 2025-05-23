@@ -351,7 +351,11 @@ function displayResult(result) {
     console.log('开始显示结果，数据:', result);
     
     if (!result.rings || !Array.isArray(result.rings) || result.rings.length === 0) {
-        throw new Error('没有找到芳香环系统');
+        // Even if no aromatic rings, we might still have descriptors to show.
+        // Consider if this error should prevent descriptor display or be handled differently.
+        // For now, we'll let it proceed to display descriptors if available.
+        // throw new Error('没有找到芳香环系统'); 
+        console.warn('没有找到芳香环系统, 但仍会尝试显示分子描述符。');
     }
     
     const resultsDiv = document.getElementById('results');
@@ -361,22 +365,55 @@ function displayResult(result) {
     }
     
     // 处理环系统数据
-    const processedRings = result.rings.map(ring => {
-        // 确保所有必要的字段都存在
-        const ringNumber = ring.ring_number || '未知';
-        const atoms = Array.isArray(ring.atoms) ? ring.atoms : [];
-        // 处理pi_homa值，确保是数字并保留4位小数
-        let piHoma = '未知';
-        if (ring.pi_homa !== undefined && ring.pi_homa !== null) {
-            const piHomaNum = parseFloat(ring.pi_homa);
-            if (!isNaN(piHomaNum)) {
-                piHoma = piHomaNum.toFixed(4);
+    let processedRingsHtml = '';
+    if (result.rings && Array.isArray(result.rings) && result.rings.length > 0) {
+        const processedRings = result.rings.map(ring => {
+            const ringNumber = ring.ring_number || '未知';
+            const atoms = Array.isArray(ring.atoms) ? ring.atoms : [];
+            let piHoma = '未知';
+            if (ring.pi_homa !== undefined && ring.pi_homa !== null) {
+                const piHomaNum = parseFloat(ring.pi_homa);
+                if (!isNaN(piHomaNum)) {
+                    piHoma = piHomaNum.toFixed(4);
+                }
             }
-        }
-        return { ringNumber, atoms, piHoma };
-    });
-    
-    console.log('处理后的环系统数据:', processedRings);
+            return { ringNumber, atoms, piHoma };
+        });
+        console.log('处理后的环系统数据:', processedRings);
+
+        processedRingsHtml = `
+            <div class="col-md-6">
+                <h6>环系统分析</h6>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>环编号</th>
+                                <th>原子索引</th>
+                                <th>π-HOMA值</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${processedRings.map(ring => `
+                                <tr>
+                                    <td>${ring.ringNumber}</td>
+                                    <td class="atom-indices">${ring.atoms.join(', ')}</td>
+                                    <td class="pi-homa-value">${ring.piHoma}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    } else {
+        processedRingsHtml = `
+            <div class="col-md-6">
+                <h6>环系统分析</h6>
+                <p>当前分子未检测到符合条件的芳香环系统。</p>
+            </div>
+        `;
+    }
     
     const resultHtml = `
         <div class="col-lg-10">
@@ -391,30 +428,21 @@ function displayResult(result) {
                             <img src="data:image/png;base64,${result.molecule_image}" 
                                  alt="分子结构" class="molecule-image">
                         </div>
-                        <div class="col-md-6">
-                            <h6>环系统分析</h6>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>环编号</th>
-                                            <th>原子索引</th>
-                                            <th>π-HOMA值</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${processedRings.map(ring => `
-                                            <tr>
-                                                <td>${ring.ringNumber}</td>
-                                                <td class="atom-indices">${ring.atoms.join(', ')}</td>
-                                                <td class="pi-homa-value">${ring.piHoma}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
+                        ${processedRingsHtml}
+                    </div>
+
+                    <!-- Molecular Descriptors Section Structure -->
+                    <div id="molecular-descriptors-display" class="mt-4" style="display: none;">
+                        <hr>
+                        <h6 class="mb-3"><i class="fas fa-atom me-2"></i>分子描述符</h6>
+                        <ul id="descriptors-list" class="list-group list-group-flush">
+                            <!-- JavaScript will populate this list -->
+                        </ul>
+                        <div id="descriptors-error" class="alert alert-warning mt-2" style="display: none;">
+                            未能加载分子描述符或当前分子无此数据。
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -422,6 +450,42 @@ function displayResult(result) {
     
     console.log('更新结果显示');
     resultsDiv.innerHTML = resultHtml;
+
+    // ---- START Molecular Descriptors Handling ----
+    const descriptorsDisplayDiv = document.getElementById('molecular-descriptors-display');
+    const descriptorsListUl = document.getElementById('descriptors-list');
+    const descriptorsErrorDiv = document.getElementById('descriptors-error');
+
+    if (!descriptorsDisplayDiv || !descriptorsListUl || !descriptorsErrorDiv) {
+        console.error('Molecular descriptor elements not found in the dynamically generated HTML. This should not happen if resultHtml is correct.');
+        return; // Critical error, elements defined in resultHtml are missing
+    }
+
+    descriptorsListUl.innerHTML = ''; // Clear previous items
+
+    if (result.molecular_descriptors && typeof result.molecular_descriptors === 'object' && Object.keys(result.molecular_descriptors).length > 0) {
+        console.log('分子描述符数据:', result.molecular_descriptors);
+        for (const key in result.molecular_descriptors) {
+            // Ensure it's a direct property and not from prototype
+            if (Object.prototype.hasOwnProperty.call(result.molecular_descriptors, key)) {
+                const value = result.molecular_descriptors[key];
+                const listItem = document.createElement('li');
+                listItem.classList.add('list-group-item');
+                // Format numbers to 2 decimal places if they are numbers and have toFixed method
+                const displayValue = (typeof value === 'number' && value.toFixed) ? value.toFixed(2) : value;
+                listItem.innerHTML = `<strong>${key}:</strong> ${displayValue}`;
+                descriptorsListUl.appendChild(listItem);
+            }
+        }
+        descriptorsDisplayDiv.style.display = 'block'; // Show the section
+        descriptorsErrorDiv.style.display = 'none';  // Hide error message
+    } else {
+        console.log('No molecular descriptors found or descriptors are empty.');
+        descriptorsDisplayDiv.style.display = 'none'; // Hide the section
+        descriptorsErrorDiv.style.display = 'block'; // Show error message
+        descriptorsErrorDiv.textContent = '未能加载分子描述符或当前分子无此数据。'; // Ensure message is set
+    }
+    // ---- END Molecular Descriptors Handling ----
 }
 
 // 添加到历史记录
@@ -544,6 +608,10 @@ function exportMolecule() {
 // 显示加载动画
 function showLoading() {
     document.querySelector('.loading').style.display = 'block';
+    const resultsDiv = document.getElementById('results');
+    if (resultsDiv) {
+        resultsDiv.innerHTML = ''; // Clear previous results, including descriptors area
+    }
 }
 
 // 隐藏加载动画
