@@ -1,4 +1,56 @@
-flask>=2.0.0
-rdkit>=2022.9.1
-scikit-learn>=1.0.0
-joblib>=1.1.0
+# Core dependencies
+flask>=2.3.0
+rdkit>=2023.3.1
+scikit-learn>=1.3.0
+joblib>=1.3.0
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Image processing
+Pillow>=10.0.0
+
+# Scientific computing
+scipy>=1.10.0
+
+# Web server (production)
+gunicorn>=21.0.0
+waitress>=2.1.0
+
+# Development dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.5.0
+
+# Documentation
+sphinx>=7.0.0
+sphinx-rtd-theme>=1.3.0
+
+# Security
+cryptography>=41.0.0
+
+# Environment management
+python-dotenv>=1.0.0
+
+# API documentation
+flask-restx>=1.2.0
+
+# CORS support
+flask-cors>=4.0.0
+
+# Rate limiting
+flask-limiter>=3.5.0
+
+# Caching
+flask-caching>=2.1.0
+
+# Database (if needed for future features)
+sqlalchemy>=2.0.0
+flask-sqlalchemy>=3.0.0
+
+# Migration (if database is used)
+flask-migrate>=4.0.0
+
+# Monitoring and logging
+structlog>=23.0.0
